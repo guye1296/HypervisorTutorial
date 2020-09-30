@@ -119,6 +119,7 @@
   <PropertyGroup />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <DebuggerFlavor>DbgengKernelDebugger</DebuggerFlavor>
+    <Inf2CatUseLocalTime>true</Inf2CatUseLocalTime>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <DebuggerFlavor>DbgengKernelDebugger</DebuggerFlavor>
@@ -149,8 +150,10 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="HvDriverMain.cpp" />
+    <ClCompile Include="HvMajorFunctions.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="HvMajorFunctions.h" />
     <ClInclude Include="Utilities.h" />
   </ItemGroup>
   <ItemGroup>

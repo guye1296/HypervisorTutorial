@@ -2,6 +2,7 @@
 #include <wdf.h>
 #include <wdm.h>
 
+#include "HvMajorFunctions.h"
 #include "Utilities.h"
 
 
@@ -13,31 +14,15 @@ extern void inline assemblyFunction1(void);
 extern void inline assemblyFunction2(void);
 
 
-// Following functions must have C linkage
-extern "C"
-{
-// @note: naming is against the convention due to `DriverEntry`
-//        being the driver's entry point
+extern "C" {
 DRIVER_INITIALIZE DriverEntry;
 DRIVER_UNLOAD driverUnload;
-DRIVER_DISPATCH hvDefaultIrpHandler;
 }
+
 
 #pragma alloc_text(INIT, DriverEntry)
 #pragma alloc_text(PAGE, driverUnload)
 
-NTSTATUS hvDefaultIrpHandler(
-	_In_ struct _DEVICE_OBJECT* DeviceObject,
-	_Inout_ struct _IRP* Irp
-)
-{
-	UNUSED_PARAMETER(Irp);
-	UNUSED_PARAMETER(DeviceObject);
-
-	DbgPrint(__FUNCTION__ ": \n");
-
-	return STATUS_NOT_SUPPORTED;
-}
 
 _Use_decl_annotations_
 NTSTATUS DriverEntry(
@@ -74,6 +59,12 @@ NTSTATUS DriverEntry(
 	for (size_t i = 0; i < IRP_MJ_MAXIMUM_FUNCTION; ++i) {
 		driverObject->MajorFunction[i] = hvDefaultIrpHandler;
 	}
+
+	driverObject->MajorFunction[IRP_MJ_WRITE] = hvWriteIrpHandler;
+	driverObject->MajorFunction[IRP_MJ_READ] = hvReadIrpHandler;
+	driverObject->MajorFunction[IRP_MJ_CREATE] = hvCreateIrpHandler;
+	driverObject->MajorFunction[IRP_MJ_DEVICE_CONTROL] = hvDeviceControlIrpHandler;
+	driverObject->MajorFunction[IRP_MJ_CLOSE] = hvCloseIrpHandler;
 
 	driverObject->DriverUnload = driverUnload;
 
