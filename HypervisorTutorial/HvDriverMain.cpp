@@ -19,18 +19,32 @@ extern "C"
 	//        being the driver's entrypoint
 	DRIVER_INITIALIZE DriverEntry;
 	DRIVER_UNLOAD driverUnload;
+	DRIVER_DISPATCH hvDefaultIrpHandler;
 }
 
 #pragma alloc_text(INIT, DriverEntry)
 #pragma alloc_text(PAGE, driverUnload)
 
+NTSTATUS 
+hvDefaultIrpHandler(
+	_In_ struct _DEVICE_OBJECT* DeviceObject,
+	_Inout_ struct _IRP* Irp
+)
+{
+	UNUSED_PARAMETER(Irp);
+	UNUSED_PARAMETER(DeviceObject);
+
+	DbgPrint(__FUNCTION__ ": \n");
+
+	return STATUS_NOT_SUPPORTED;
+}
 
 // `DriverEntry` and `driverUnload` should have C linkage
 _Use_decl_annotations_
-	NTSTATUS DriverEntry(
-		IN PDRIVER_OBJECT driverObject,
-		IN PUNICODE_STRING registryPath
-	)
+NTSTATUS DriverEntry(
+	IN PDRIVER_OBJECT driverObject,
+	IN PUNICODE_STRING registryPath
+)
 {
 	UNUSED_PARAMETER(registryPath);
 
@@ -57,6 +71,12 @@ _Use_decl_annotations_
 		status = STATUS_FAILED_DRIVER_ENTRY;
 		goto cleanup;
 	}
+
+
+	for (size_t i = 0; i < IRP_MJ_MAXIMUM_FUNCTION; ++i) {
+		driverObject->MajorFunction[i] = hvDefaultIrpHandler;
+	}
+
 
 	driverObject->DriverUnload = driverUnload;
 	driverObject->Flags |= IO_TYPE_DEVICE;
