@@ -13,68 +13,68 @@ extern void inline assemblyFunction1(void);
 extern void inline assemblyFunction2(void);
 
 
-// `DriverEntry` and `driverUnload` should have C linkage
-extern "C" {
+extern "C"
+{
 	// @note: naming is against the convention due to `DriverEntry`
 	//        being the driver's entrypoint
 	DRIVER_INITIALIZE DriverEntry;
 	DRIVER_UNLOAD driverUnload;
+}
 
 #pragma alloc_text(INIT, DriverEntry)
 #pragma alloc_text(PAGE, driverUnload)
 
-	_Use_decl_annotations_
-		NTSTATUS DriverEntry(
-			IN PDRIVER_OBJECT driverObject,
-			IN PUNICODE_STRING registryPath
-		)
-	{
-		UNUSED_PARAMETER(registryPath);
 
-		NTSTATUS status = STATUS_SUCCESS;
-		PDEVICE_OBJECT deviceObject = nullptr;
-		UNICODE_STRING driverName, dosDeviceName;
+// `DriverEntry` and `driverUnload` should have C linkage
+_Use_decl_annotations_
+	NTSTATUS DriverEntry(
+		IN PDRIVER_OBJECT driverObject,
+		IN PUNICODE_STRING registryPath
+	)
+{
+	UNUSED_PARAMETER(registryPath);
 
-		DbgPrint(__FUNCTION__ ": loaded\n");
+	NTSTATUS status = STATUS_SUCCESS;
+	PDEVICE_OBJECT deviceObject = nullptr;
+	UNICODE_STRING driverName, dosDeviceName;
 
-		RtlInitUnicodeString(&driverName, LR"(\Device\MyHypervisor)");
-		RtlInitUnicodeString(&dosDeviceName, DOS_DEVICE_NAME);
+	DbgPrint(__FUNCTION__ ": loaded\n");
 
-		status = IoCreateDevice(
-			driverObject,
-			0,
-			&driverName,
-			FILE_DEVICE_UNKNOWN,
-			FILE_DEVICE_SECURE_OPEN,
-			false,
-			&deviceObject
-		);
+	RtlInitUnicodeString(&driverName, LR"(\Device\MyHypervisor)");
+	RtlInitUnicodeString(&dosDeviceName, DOS_DEVICE_NAME);
 
-		if (STATUS_SUCCESS != status) {
-			status = STATUS_FAILED_DRIVER_ENTRY;
-			goto cleanup;
-		}
+	status = IoCreateDevice(
+		driverObject,
+		0,
+		&driverName,
+		FILE_DEVICE_UNKNOWN,
+		FILE_DEVICE_SECURE_OPEN,
+		false,
+		&deviceObject
+	);
 
-		driverObject->DriverUnload = driverUnload;
-		driverObject->Flags |= IO_TYPE_DEVICE;
-		driverObject->Flags &= (~DO_DEVICE_INITIALIZING);
-
-		status = IoCreateSymbolicLink(&dosDeviceName, &driverName);
-
-	cleanup:
-		return status;
+	if (STATUS_SUCCESS != status) {
+		status = STATUS_FAILED_DRIVER_ENTRY;
+		goto cleanup;
 	}
 
-	VOID driverUnload(PDRIVER_OBJECT driverObject)
-	{
-		UNICODE_STRING symlinkName;
-		RtlInitUnicodeString(&symlinkName, DOS_DEVICE_NAME);
+	driverObject->DriverUnload = driverUnload;
+	driverObject->Flags |= IO_TYPE_DEVICE;
+	driverObject->Flags &= (~DO_DEVICE_INITIALIZING);
 
-		DbgPrint(__FUNCTION__ ": called\n");
+	status = IoCreateSymbolicLink(&dosDeviceName, &driverName);
 
-		(void)IoDeleteDevice(driverObject->DeviceObject);
-		(void)IoDeleteSymbolicLink(&symlinkName);
-	}
+cleanup:
+	return status;
 }
 
+VOID driverUnload(PDRIVER_OBJECT driverObject)
+{
+	UNICODE_STRING symlinkName;
+	RtlInitUnicodeString(&symlinkName, DOS_DEVICE_NAME);
 
+	DbgPrint(__FUNCTION__ ": called\n");
+
+	(void)IoDeleteDevice(driverObject->DeviceObject);
+	(void)IoDeleteSymbolicLink(&symlinkName);
+}
