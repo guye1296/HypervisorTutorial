@@ -10,11 +10,13 @@ constexpr WCHAR DRIVER_NAME[] = LR"(\Device\MyHypervisor)";
 constexpr WCHAR DOS_DEVICE_NAME[] = LR"(\DosDevices\MyHypervisor)";
 
 
-extern void inline assemblyFunction1(void);
-extern void inline assemblyFunction2(void);
+extern void inline enterVMXOperation(void);
+extern void inline breakpoint(void);
 
 
 extern "C" {
+// @note: naming is against the convention due to `DriverEntry`
+//        being the driver's entry point
 DRIVER_INITIALIZE DriverEntry;
 DRIVER_UNLOAD driverUnload;
 }

@@ -10,8 +10,6 @@
 // Following functions must have C linkage
 extern "C"
 {
-// @note: naming is against the convention due to `DriverEntry`
-//        being the driver's entry point
 DRIVER_DISPATCH hvDefaultIrpHandler;
 DRIVER_DISPATCH hvReadIrpHandler;
 DRIVER_DISPATCH hvWriteIrpHandler;
@@ -20,4 +18,11 @@ DRIVER_DISPATCH hvCreateIrpHandler;
 DRIVER_DISPATCH hvDeviceControlIrpHandler;
 }
 
+
+#pragma alloc_text(PAGE, hvDefaultIrpHandler)
+#pragma alloc_text(PAGE, hvCreateIrpHandler)
+#pragma alloc_text(PAGE, hvWriteIrpHandler)
+#pragma alloc_text(PAGE, hvReadIrpHandler)
+#pragma alloc_text(PAGE, hvCloseIrpHandler)
+#pragma alloc_text(PAGE, hvDeviceControlIrpHandler)
 
