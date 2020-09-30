@@ -5,28 +5,28 @@
 #include "Utilities.h"
 
 
+constexpr WCHAR DRIVER_NAME[] = LR"(\Device\MyHypervisor)";
 constexpr WCHAR DOS_DEVICE_NAME[] = LR"(\DosDevices\MyHypervisor)";
 
 
 extern void inline assemblyFunction1(void);
-
 extern void inline assemblyFunction2(void);
 
 
+// Following functions must have C linkage
 extern "C"
 {
-	// @note: naming is against the convention due to `DriverEntry`
-	//        being the driver's entrypoint
-	DRIVER_INITIALIZE DriverEntry;
-	DRIVER_UNLOAD driverUnload;
-	DRIVER_DISPATCH hvDefaultIrpHandler;
+// @note: naming is against the convention due to `DriverEntry`
+//        being the driver's entry point
+DRIVER_INITIALIZE DriverEntry;
+DRIVER_UNLOAD driverUnload;
+DRIVER_DISPATCH hvDefaultIrpHandler;
 }
 
 #pragma alloc_text(INIT, DriverEntry)
 #pragma alloc_text(PAGE, driverUnload)
 
-NTSTATUS 
-hvDefaultIrpHandler(
+NTSTATUS hvDefaultIrpHandler(
 	_In_ struct _DEVICE_OBJECT* DeviceObject,
 	_Inout_ struct _IRP* Irp
 )
@@ -39,7 +39,6 @@ hvDefaultIrpHandler(
 	return STATUS_NOT_SUPPORTED;
 }
 
-// `DriverEntry` and `driverUnload` should have C linkage
 _Use_decl_annotations_
 NTSTATUS DriverEntry(
 	IN PDRIVER_OBJECT driverObject,
@@ -54,7 +53,7 @@ NTSTATUS DriverEntry(
 
 	DbgPrint(__FUNCTION__ ": loaded\n");
 
-	RtlInitUnicodeString(&driverName, LR"(\Device\MyHypervisor)");
+	RtlInitUnicodeString(&driverName, DRIVER_NAME);
 	RtlInitUnicodeString(&dosDeviceName, DOS_DEVICE_NAME);
 
 	status = IoCreateDevice(
@@ -72,15 +71,14 @@ NTSTATUS DriverEntry(
 		goto cleanup;
 	}
 
-
 	for (size_t i = 0; i < IRP_MJ_MAXIMUM_FUNCTION; ++i) {
 		driverObject->MajorFunction[i] = hvDefaultIrpHandler;
 	}
 
-
 	driverObject->DriverUnload = driverUnload;
-	driverObject->Flags |= IO_TYPE_DEVICE;
-	driverObject->Flags &= (~DO_DEVICE_INITIALIZING);
+
+	deviceObject->Flags |= IO_TYPE_DEVICE;
+	deviceObject->Flags &= (~DO_DEVICE_INITIALIZING);
 
 	status = IoCreateSymbolicLink(&dosDeviceName, &driverName);
 
@@ -98,3 +96,4 @@ VOID driverUnload(PDRIVER_OBJECT driverObject)
 	(void)IoDeleteDevice(driverObject->DeviceObject);
 	(void)IoDeleteSymbolicLink(&symlinkName);
 }
+
