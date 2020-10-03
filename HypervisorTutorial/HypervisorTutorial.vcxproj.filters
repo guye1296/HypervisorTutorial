@@ -30,6 +30,12 @@
     <ClCompile Include="HvMajorFunctions.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Utilities.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Vmx.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Utilities.h">
@@ -38,9 +44,12 @@
     <ClInclude Include="HvMajorFunctions.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Vmx.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <NASM Include="Hv.asm">
+    <NASM Include="VmxInternal.asm">
       <Filter>Source Files</Filter>
     </NASM>
   </ItemGroup>

@@ -1,26 +1,39 @@
 #include "HvMajorFunctions.h"
+#include "Utilities.h"
+#include "Vmx.h"
+
+
+#pragma warning(disable: 4505)
+// TODO: Implement
+static VOID printIrpInfo(
+	IN PIRP irp
+) 
+{
+	UNUSED_PARAMETER(irp);
+}
+#pragma warning(default: 4505)
 
 
 NTSTATUS hvDefaultIrpHandler(
-	IN struct _DEVICE_OBJECT* DeviceObject,
-	IN OUT struct _IRP* Irp
+	IN PDEVICE_OBJECT deviceObject,
+	IN OUT PIRP irp
 )
 {
-	UNUSED_PARAMETER(DeviceObject);
+	UNUSED_PARAMETER(deviceObject);
 
 	DbgPrint(__FUNCTION__ ": Handling IRP\n");
 
-	Irp->IoStatus.Status = STATUS_SUCCESS;
-	Irp->IoStatus.Information = 0;
-	(void)IoCompleteRequest(Irp, IO_NO_INCREMENT);
+	irp->IoStatus.Status = STATUS_SUCCESS;
+	irp->IoStatus.Information = 0;
+	(void)IoCompleteRequest(irp, IO_NO_INCREMENT);
 
 	return STATUS_SUCCESS;
 }
 
 
 NTSTATUS hvReadIrpHandler(
-	IN struct _DEVICE_OBJECT* deviceObject,
-	IN OUT struct _IRP* irp
+	IN PDEVICE_OBJECT deviceObject,
+	IN OUT PIRP irp
 )
 {
 	return hvDefaultIrpHandler(
@@ -31,8 +44,8 @@ NTSTATUS hvReadIrpHandler(
 
 
 NTSTATUS hvWriteIrpHandler(
-	IN struct _DEVICE_OBJECT* deviceObject,
-	IN OUT struct _IRP* irp
+	IN PDEVICE_OBJECT deviceObject,
+	IN OUT PIRP irp
 )
 {
 	return hvDefaultIrpHandler(
@@ -43,8 +56,8 @@ NTSTATUS hvWriteIrpHandler(
 
 
 NTSTATUS hvCloseIrpHandler(
-	IN struct _DEVICE_OBJECT* deviceObject,
-	IN OUT struct _IRP* irp
+	IN PDEVICE_OBJECT deviceObject,
+	IN OUT PIRP irp
 )
 {
 	return hvDefaultIrpHandler(
@@ -54,22 +67,40 @@ NTSTATUS hvCloseIrpHandler(
 }
 
 
+// enter VMX operation upon creating the device
 NTSTATUS hvCreateIrpHandler(
-	IN struct _DEVICE_OBJECT* deviceObject,
-	IN OUT struct _IRP* irp
+	IN PDEVICE_OBJECT deviceObject,
+	IN OUT PIRP irp
 )
 {
+	UNUSED_PARAMETER(deviceObject);
 
-	return hvDefaultIrpHandler(
-		deviceObject,
-		irp
-	);
+	DbgPrint("Entered " __FUNCTION__ "\n");
+
+	if (!vmx::vmxNotLocked()) {
+		irp->IoStatus.Status = STATUS_NOT_SUPPORTED;
+		goto cleanup;
+	}
+
+	// TODO: allocate space for the vmx region
+
+	(void)vmx::enterVmxOperation();
+	irp->IoStatus.Status = STATUS_SUCCESS;
+
+cleanup:
+	irp->IoStatus.Information = 0;
+	(void)IoCompleteRequest(irp, IO_NO_INCREMENT);
+
+	return STATUS_SUCCESS;
+
+
+	
 }
 
 
 NTSTATUS hvDeviceControlIrpHandler(
-	IN struct _DEVICE_OBJECT* deviceObject,
-	IN OUT struct _IRP* irp
+	IN PDEVICE_OBJECT deviceObject,
+	IN OUT PIRP irp
 )
 {
 

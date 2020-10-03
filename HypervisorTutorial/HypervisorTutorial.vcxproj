@@ -151,13 +151,16 @@
   <ItemGroup>
     <ClCompile Include="HvDriverMain.cpp" />
     <ClCompile Include="HvMajorFunctions.cpp" />
+    <ClCompile Include="Utilities.cpp" />
+    <ClCompile Include="Vmx.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="HvMajorFunctions.h" />
     <ClInclude Include="Utilities.h" />
+    <ClInclude Include="Vmx.h" />
   </ItemGroup>
   <ItemGroup>
-    <NASM Include="Hv.asm" />
+    <NASM Include="VmxInternal.asm" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

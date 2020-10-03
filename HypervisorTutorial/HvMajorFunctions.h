@@ -4,8 +4,6 @@
 #include <wdf.h>
 #include <wdm.h>
 
-#include "Utilities.h"
-
 
 // Following functions must have C linkage
 extern "C"
