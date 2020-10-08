@@ -1,4 +1,4 @@
-#include "HvMajorFunctions.h"
+#include "DriverIrpFunctions.h"
 #include "Utilities.h"
 #include "Vmx.h"
 
@@ -68,6 +68,7 @@ NTSTATUS hvCloseIrpHandler(
 
 
 // enter VMX operation upon creating the device
+#pragma warning(disable : 4102)
 NTSTATUS hvCreateIrpHandler(
 	IN PDEVICE_OBJECT deviceObject,
 	IN OUT PIRP irp
@@ -77,26 +78,25 @@ NTSTATUS hvCreateIrpHandler(
 
 	DbgPrint("Entered " __FUNCTION__ "\n");
 
-	if (!vmx::vmxNotLocked()) {
-		irp->IoStatus.Status = STATUS_NOT_SUPPORTED;
+	/* 
+	* Will be enabled in later chapters
+	if (!vmx::vmxEnabledByBios()) {
+		DEBUG_TRACE_ERROR("Vmx operation not avialable :(");
 		goto cleanup;
 	}
+	*/
 
-	// TODO: allocate space for the vmx region
-
-	(void)vmx::enterVmxOperation();
-	irp->IoStatus.Status = STATUS_SUCCESS;
+	(void)vmx::enableVmxOperation();
+	DEBUG_TRACE_INFO("VMX Enabled");
 
 cleanup:
+	irp->IoStatus.Status = STATUS_SUCCESS;
 	irp->IoStatus.Information = 0;
 	(void)IoCompleteRequest(irp, IO_NO_INCREMENT);
 
 	return STATUS_SUCCESS;
-
-
-	
 }
-
+#pragma warning(default : 4102)
 
 NTSTATUS hvDeviceControlIrpHandler(
 	IN PDEVICE_OBJECT deviceObject,

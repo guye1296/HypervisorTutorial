@@ -2,7 +2,7 @@
 #include <wdf.h>
 #include <wdm.h>
 
-#include "HvMajorFunctions.h"
+#include "DriverIrpFunctions.h"
 #include "Utilities.h"
 
 

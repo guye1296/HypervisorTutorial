@@ -24,16 +24,16 @@
     </Inf>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="HvDriverMain.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="HvMajorFunctions.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Utilities.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Vmx.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Driver.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="DriverIrpFunctions.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -41,10 +41,10 @@
     <ClInclude Include="Utilities.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="HvMajorFunctions.h">
+    <ClInclude Include="Vmx.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Vmx.h">
+    <ClInclude Include="DriverIrpFunctions.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

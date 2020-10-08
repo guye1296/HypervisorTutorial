@@ -17,10 +17,10 @@ namespace vmx
 	// should have external linkge so it won't be declared multiple times
 	extern SIZE_T vmxonRegionAddress;
 
+
 	// check whether IA32_FEATURE_CONTROL_MSR[0] (lock bit) is turned on
-	bool vmxNotLocked();
+	bool vmxEnabledByBios();
 
 
-	// dirty hack so `enterVmxOperation` can be included in the namespace
-	void enterVmxOperation();
+	void enableVmxOperation();
 }

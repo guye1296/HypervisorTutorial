@@ -126,6 +126,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <DebuggerFlavor>DbgengKernelDebugger</DebuggerFlavor>
+    <Inf2CatUseLocalTime>true</Inf2CatUseLocalTime>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <DebuggerFlavor>DbgengKernelDebugger</DebuggerFlavor>
@@ -142,6 +143,12 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">
     <DebuggerFlavor>DbgengKernelDebugger</DebuggerFlavor>
   </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <PostBuildEvent>
+      <Command>mkdir C:\TMP\$(TargetName)\
+copy $(TargetDir) C:\TMP\$(TargetName)\</Command>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
   <ItemGroup>
     <Inf Include="HypervisorTutorial.inf" />
   </ItemGroup>
@@ -149,13 +156,13 @@
     <FilesToPackage Include="$(TargetPath)" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="HvDriverMain.cpp" />
-    <ClCompile Include="HvMajorFunctions.cpp" />
+    <ClCompile Include="Driver.cpp" />
+    <ClCompile Include="DriverIrpFunctions.cpp" />
     <ClCompile Include="Utilities.cpp" />
     <ClCompile Include="Vmx.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="HvMajorFunctions.h" />
+    <ClInclude Include="DriverIrpFunctions.h" />
     <ClInclude Include="Utilities.h" />
     <ClInclude Include="Vmx.h" />
   </ItemGroup>
