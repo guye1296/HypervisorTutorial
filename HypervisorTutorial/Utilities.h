@@ -13,6 +13,8 @@
 #define DEBUG_TRACE_INFO(format, ...) _DEBUG_TRACE(INFO, format , ##__VA_ARGS__)
 #define DEBUG_TRACE_ERROR(format, ...) _DEBUG_TRACE(ERROR, format, ##__VA_ARGS__)
 
+#define HV_ASSERT(expression, message, ...) do { if(!(expression)) DEBUG_TRACE_ERROR(message, ##__VA_ARGS__); } while(0)
+
 
 VOID printBuffer(
 	_In_reads_(length) PVOID buffer,

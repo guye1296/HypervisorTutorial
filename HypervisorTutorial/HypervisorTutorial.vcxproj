@@ -148,6 +148,14 @@
       <Command>mkdir C:\TMP\$(TargetName)\
 copy $(TargetDir) C:\TMP\$(TargetName)\</Command>
     </PostBuildEvent>
+    <ClCompile>
+      <LanguageStandard>stdcpp14</LanguageStandard>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <LanguageStandard>stdcpp14</LanguageStandard>
+    </ClCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
     <Inf Include="HypervisorTutorial.inf" />
@@ -158,12 +166,20 @@ copy $(TargetDir) C:\TMP\$(TargetName)\</Command>
   <ItemGroup>
     <ClCompile Include="Driver.cpp" />
     <ClCompile Include="DriverIrpFunctions.cpp" />
+    <ClCompile Include="Hypervisor.cpp" />
+    <ClCompile Include="OsServices.cpp" />
     <ClCompile Include="Utilities.cpp" />
+    <ClCompile Include="VirtualProcessor.cpp" />
     <ClCompile Include="Vmx.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Arch.h" />
     <ClInclude Include="DriverIrpFunctions.h" />
+    <ClInclude Include="Hypervisor.h" />
+    <ClInclude Include="OsServices.h" />
     <ClInclude Include="Utilities.h" />
+    <ClInclude Include="VirtualProcessor.h" />
+    <ClInclude Include="vmcs.h" />
     <ClInclude Include="Vmx.h" />
   </ItemGroup>
   <ItemGroup>

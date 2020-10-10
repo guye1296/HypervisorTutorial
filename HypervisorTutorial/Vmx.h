@@ -7,20 +7,18 @@
 
 namespace vmx 
 {
-	typedef struct _Vmcs {
-		UINT8 buffer[PAGE_SIZE];
-	} Vmcs;
+	// try to enable VMX in FEATURE_CONTROL MSR
+	// returns false if can't be enabled because locked
+	bool enableVmxInFeatureControl();
 
 
-	// vmxon regious physical address
-	// should be a pointer to a page-alined 4K buffer
-	// should have external linkge so it won't be declared multiple times
-	extern SIZE_T vmxonRegionAddress;
+	// check if vmx is supported by hardware
+	bool vmxSupportedByHardware();
 
 
-	// check whether IA32_FEATURE_CONTROL_MSR[0] (lock bit) is turned on
-	bool vmxEnabledByBios();
-
+	inline bool vmxSupported() {
+		return vmxSupportedByHardware() && enableVmxInFeatureControl();
+	}
 
 	void enableVmxOperation();
 }

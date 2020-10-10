@@ -89,15 +89,6 @@ NTSTATUS hvCreateIrpHandler(
 
 	DbgPrint("Entered " __FUNCTION__ "\n");
 
-	/* 
-	* Will be enabled in later chapters
-	if (!vmx::vmxEnabledByBios()) {
-		DEBUG_TRACE_ERROR("Vmx operation not avialable :(");
-		goto cleanup;
-	}
-	*/
-
-	// doesn't matter on which core it runs afaik
 	(void)vmx::enableVmxOperation();
 	DEBUG_TRACE_INFO("VMX Enabled");
 
@@ -186,6 +177,3 @@ cleanup:
 	irp->IoStatus.Status = status;
 	return status;
 }
-		
-
-

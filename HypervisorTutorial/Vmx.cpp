@@ -1,33 +1,46 @@
 #include <intrin.h>
 
 #include "Vmx.h"
+#include "Arch.h"
+#include "Utilities.h"
 
 
-static constexpr UINT64 IA32_FEATURE_CONTROL_MSR = 0x3A;
-
-
-// calls `vmxon` with the dereference of `vmxonRegion`
-extern "C" void vmxonInternal(SIZE_T* vmxonRegion);
-
-
-SIZE_T vmx::vmxonRegionAddress = { 0 };
-
-
-bool vmx::vmxEnabledByBios()
+bool vmx::enableVmxInFeatureControl()
 {
-	bool locked;
-	bool vmxNonSmxEnabled;
+	intel::msr::FeatureControl featureControl;
 
 	// check if FEATURE_CONTROL_MSR is locked
-	UINT64 featureControlMsr =
-		__readmsr(IA32_FEATURE_CONTROL_MSR);
+	featureControl.all = __readmsr(intel::msr::FeatureControl::code);
 
-	locked = featureControlMsr & 0x1;
-	vmxNonSmxEnabled = featureControlMsr & (0x1 << 1);
+	if (featureControl.fields.locked) {
+		if (!featureControl.fields.vmxNonSmxEnabled) {
+			DEBUG_TRACE_ERROR(
+				"FEATURE_CONTROL_MSR is locked by BIOS, Virtualization can't be enabled"
+			);
+			return false;
+		}
+	}
+	else {
+		featureControl.fields.vmxSmxEnabled = true;
+		featureControl.fields.vmxNonSmxEnabled = true;
+		(void)__writemsr(intel::msr::FeatureControl::code, featureControl.all);
+	}
 
-	// currently just assuming that not running in SMX
-	// TODO: fix
-	return locked && vmxNonSmxEnabled;
+	return true;
+}
+
+
+bool vmx::vmxSupportedByHardware()
+{
+	UINT32 cpuidResult[4];
+	UINT32 eax = 1;
+
+	__cpuid(reinterpret_cast<INT*>(cpuidResult), eax);
+	auto constexpr cpuidFeatureEcxVmx = 1 << 5;
+	auto constexpr cpuidInfoEcxIndex = 2;
+
+	// check if vmx is supported by the processor
+	return (cpuidFeatureEcxVmx & cpuidResult[cpuidInfoEcxIndex]);
 }
 
 
